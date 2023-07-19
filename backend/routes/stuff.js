@@ -9,6 +9,7 @@ const sharp = require ('sharp');
 
 router.get('/' , stuffCtrl.getAllBooks);
 router.post('/', auth , multerSharp , stuffCtrl.createBook);
+router.get('/bestrating', stuffCtrl.getBestRating);
 router.get('/:id' , stuffCtrl.getOneBook);
 router.put('/:id', auth , multerSharp , stuffCtrl.modifyBook);
 router.delete('/:id', auth , stuffCtrl.deleteBook);
