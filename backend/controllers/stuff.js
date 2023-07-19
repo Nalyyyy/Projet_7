@@ -1,3 +1,4 @@
+const { log } = require('console');
 const Book = require('../models/book');
 const fs = require('fs');
 
@@ -94,3 +95,56 @@ exports.getAllBooks = (req, res, next) => {
     }
   );
 };
+
+exports.newRating = (req,res,next) => {
+  const rate = req.body;
+  rate.grade = rate.rating;
+  delete rate.rating;
+
+  console.log(req.params);
+
+  Book.findOne({_id: req.params.id})
+  .then((thing) => {
+      Book.updateOne({ _id: req.params.id}, { $push : {ratings : rate}},)
+              .then(() =>  {return res.status(200).json({message : 'Objet modifié!'})})
+              .catch(error => {return res.status(401).json({ error })});
+  })
+  .catch((error) => {
+      res.status(400).json({ error });
+  });
+
+  let averageRatingNum = 0;
+
+  Book.findOne({_id: req.params.id})
+  .then((thing) => {
+      
+      const length = thing.ratings.length;
+      const test = thing.ratings
+ 
+      for (let x=0 ; x< length ; x++){
+        averageRatingNum += test[x].grade;
+      };
+
+      console.log(averageRatingNum);
+      averageRatingNum /= length;
+    
+      console.log(averageRatingNum);
+  })
+  .catch((error) => {
+     return res.status(400).json({ error });
+  });
+
+
+  Book.findOne({_id: req.params.id})
+  .then((thing) => {
+      Book.updateOne({ _id: req.params.id}, { averageRating : averageRatingNum })
+              .then(() =>  {return res.status(200).json({message : 'Objet modifié!'})})
+              .catch(error => {return res.status(401).json({ error })});
+  })
+  .catch((error) => {
+      res.status(400).json({ error });
+  });
+
+
+
+}
