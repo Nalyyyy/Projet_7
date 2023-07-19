@@ -155,8 +155,10 @@ exports.newRating = (req,res,next) => {
   let num =0;
 
 
+  
   Book.findOne({_id: req.params.id})
   .then((thing) => {
+
       const length = thing.ratings.length;
       const test = thing.ratings
  
@@ -168,22 +170,12 @@ exports.newRating = (req,res,next) => {
       averageRatingNum /= length;
       num = Math.round(averageRatingNum * 100) / 100 //arrondi a deux chiffres après la virgule
 
-      console.log(averageRatingNum);
-  })
-  .catch((error) => {
-     return res.status(400).json({ error });
-  });
-
-
-  
-  Book.findOne({_id: req.params.id})
-  .then((thing) => {
-    console.log(thing);
+      
       Book.updateOne({ _id: req.params.id}, {   averageRating :  num } )
-              .then(() =>   res.status(200).json({message: 'oui' , book: thing}))
+              .then(() =>   res.status(200).json({message:'ok'}))
               .catch((error) =>  res.status(401).json({ error }) );
   })
-  .then (()=> res.status(200).json({message: 'oui' , book: thing}))
+  
   .catch ((error) => res.status(401).json( {error}));
   
 }
