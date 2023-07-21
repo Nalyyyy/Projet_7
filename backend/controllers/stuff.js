@@ -23,19 +23,15 @@ exports.createBook = (req, res, next) => {
 
 
 exports.getOneBook = (req, res, next) => {
+  console.log(req.params.id);
   Book.findOne({
-    _id: req.params.id
   }).then(
     (thing) => {
       res.status(200).json(thing);
     }
-  ).catch(
-    (error) => {
-      res.status(404).json({
-        error: error
-      });
-    }
-  );
+  ).catch( 
+        (error) =>res.status(404).json(error)
+    );
 };
 
 exports.modifyBook = (req, res, next) => {
@@ -136,6 +132,8 @@ exports.getBestRating = (req, res, next) => {
 
 
 exports.newRating = (req,res,next) => {
+
+
   const rate = req.body;
   rate.grade = rate.rating;
   delete rate.rating;
@@ -144,23 +142,30 @@ exports.newRating = (req,res,next) => {
   Book.findOne({_id: req.params.id})
   .then(() => {
       Book.updateOne({ _id: req.params.id}, { $push : {ratings : rate}},)
-              .then(() =>   res.status(200).json({message : 'ok'}))
+              .then(() =>   res.status(200).json({message : 'ok', _id :'10'}))
               .catch(error =>  res.status(401).json({ error }));
+              next()
   })
   .catch((error) => {
       res.status(400).json({ error });
   });
+  
+}
 
-  let averageRatingNum = 0;
-  let num =0;
-
+exports.newAverageRating = (req,res,next) => {
 
   
+
   Book.findOne({_id: req.params.id})
   .then((thing) => {
-
-      const length = thing.ratings.length;
-      const test = thing.ratings
+    
+    // console.log(thing);
+    console.log('ok');
+    let bookFinal = thing;
+    let averageRatingNum = 0;
+    let num =0;
+    const length = thing.ratings.length;
+    const test = thing.ratings
  
       for (let x=0 ; x< length ; x++){
         averageRatingNum += test[x].grade;
@@ -169,13 +174,85 @@ exports.newRating = (req,res,next) => {
       console.log(averageRatingNum);
       averageRatingNum /= length;
       num = Math.round(averageRatingNum * 100) / 100 //arrondi a deux chiffres après la virgule
+      console.log(req.params.id);
 
-      
+      bookFinal.averageRating = num;
+      // console.log(bookFinal);
+
+
       Book.updateOne({ _id: req.params.id}, {   averageRating :  num } )
-              .then(() =>   res.status(200).json({message:'ok'}))
-              .catch((error) =>  res.status(401).json({ error }) );
+
+
+      res.status(201).json({message: req.params.id , _id:'23'})
+
+            //  .catch (error => res.status(401).json('error'))
+              
   })
-  
-  .catch ((error) => res.status(401).json( {error}));
-  
+
+
+  Book.findOne({_id: req.params.id})
+  .then((thing) => { return res.status(200).json(thing);})
+  // .catch((error) => {res.status(404).json({error: error});});
 }
+
+
+
+
+
+
+
+exports.newRating = (req,res,next) => {
+
+
+  const rate = req.body;
+  rate.grade = rate.rating;
+  delete rate.rating;
+
+
+  Book.findOne({_id: req.params.id})
+  .then(() => {
+      Book.updateOne({ _id: req.params.id}, { $push : {ratings : rate}},)
+              // .then(() =>   res.status(200).json({message : 'ok', _id :'10'}))
+              .catch(error =>  res.status(401).json({ error }));
+              // next()
+  })
+  .catch((error) => {
+      res.status(400).json({ error });
+  });
+
+  
+  Book.findOne({_id: req.params.id})
+  .then((thing) => {
+    
+    // console.log(thing);
+    console.log('ok');
+    let bookFinal = thing;
+    let averageRatingNum = 0;
+    let num =0;
+    const length = thing.ratings.length;
+    const test = thing.ratings
+ 
+      for (let x=0 ; x< length ; x++){
+        averageRatingNum += test[x].grade;
+      };
+
+      console.log(averageRatingNum);
+      averageRatingNum /= length;
+      num = Math.round(averageRatingNum * 100) / 100 //arrondi a deux chiffres après la virgule
+      console.log(req.params.id);
+
+      bookFinal.averageRating = num;
+      // console.log(bookFinal);
+      // console.log(req);
+
+      Book.updateOne({ _id: req.params.id}, {   averageRating :  num } )
+            // .then(() =>  res.status(200).json({message:'ok'}))
+            .then (()=> this.getOneBook(req)  )
+            .catch(error =>  res.status(401).json({ error }));
+
+            //  .catch (error => res.status(401).json('error'))
+              
+  
+
+
+})}

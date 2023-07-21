@@ -13,6 +13,7 @@ router.get('/bestrating', stuffCtrl.getBestRating);
 router.get('/:id' , stuffCtrl.getOneBook);
 router.put('/:id', auth , multerSharp , stuffCtrl.modifyBook);
 router.delete('/:id', auth , stuffCtrl.deleteBook);
-router.post('/:id/rating', auth , stuffCtrl.newRating )
+// router.post('/:id/rating', auth , stuffCtrl.newRating ,  stuffCtrl.newAverageRating );
+router.post('/:id/rating', auth , stuffCtrl.newRating );
 
 module.exports = router;
